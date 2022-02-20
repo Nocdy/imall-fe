@@ -1,23 +1,19 @@
 <template>
-  <ul v-infinite-scroll="load" class="infinite-list" style="overflow: auto">
+  <ul>
     <li v-for="i in count" :key="i" class="infinite-list-item">{{ i }}</li>
-    <el-backtop :visibility-height="0"/>
+    
   </ul>
 </template>
 
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, inject } from "vue";
 
 export default defineComponent({
   setup() {
-    const count = ref<number>(0);
-    const load = () => {
-      count.value += 2;
-    };
+    let count = inject<number>('count');
     return {
-      count,
-      load,
+      count
     };
   },
 });

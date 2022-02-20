@@ -9,9 +9,10 @@
             <span style="vertical-align: middle"> 未登录 </span>
           </el-button>
       </el-header>
-      <el-main >
+      <el-main v-infinite-scroll="load">
         <GarouselGoods/>
         <InfiniteScorll/> 
+        <el-backtop :visibility-height="10"/>
       </el-main>
     </el-container>
   </div>
@@ -19,7 +20,7 @@
 
 
 <script lang="ts">
-import { defineComponent,ref } from 'vue'
+import { defineComponent,provide,ref } from 'vue'
 import GarouselGoods from './components/CarouselGoods.vue'
 import InfiniteScorll from './components/InfiniteScroll.vue'
 
@@ -29,10 +30,11 @@ export default defineComponent({
     InfiniteScorll
   },
   setup() {
-        const count = ref<number>(0);
+    const count = ref<number>(0);
     const load = () => {
       count.value += 2;
     };
+    provide('count',count);
     return {
       count,
       load,
@@ -61,6 +63,7 @@ export default defineComponent({
 .common-layout .el-main {
   background-color: #e9eef3;
   color: var(--el-text-color-primary);
+  overflow: hidden;
 }
 
 .common-layout > .el-container {

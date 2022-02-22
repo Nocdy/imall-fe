@@ -20,7 +20,7 @@ export default defineComponent({
 </script>
 
 
-<style>
+<style scoped>
 .infinite-list {
   height:960px;
   padding: 0;

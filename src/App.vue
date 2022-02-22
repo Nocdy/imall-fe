@@ -2,17 +2,14 @@
   <div class="common-layout">
     <el-container>
       <el-header>
-          <el-button type="primary" plain class="el-button">
-            <el-icon style="vertical-align: middle">
-              <avatar />
-            </el-icon>
-            <span style="vertical-align: middle"> 未登录 </span>
-          </el-button>
+          <header-menu/>
       </el-header>
+
       <el-main v-infinite-scroll="load">
-        <GarouselGoods/>
-        <InfiniteScorll/> 
-        <el-backtop :visibility-height="10"/>
+        <garousel-goods />
+        <infinite-scorll />
+        <form-dialog />
+        <el-backtop :visibility-height="10" />
       </el-main>
     </el-container>
   </div>
@@ -20,45 +17,43 @@
 
 
 <script lang="ts">
-import { defineComponent,provide,ref } from 'vue'
-import GarouselGoods from './components/CarouselGoods.vue'
-import InfiniteScorll from './components/InfiniteScroll.vue'
+import { defineComponent, provide, ref } from "vue";
+import GarouselGoods from "./components/CarouselGoods.vue";
+import InfiniteScorll from "./components/InfiniteScroll.vue";
+import FormDialog from "./components/FormDialog.vue";
+import HeaderMenu from "./components/HeaderMenu.vue"
 
 export default defineComponent({
-  components:{
+  components: {
     GarouselGoods,
-    InfiniteScorll
+    InfiniteScorll,
+    FormDialog,
+    HeaderMenu
   },
   setup() {
+    const dialogFormVisible = ref(false);
     const count = ref<number>(0);
     const load = () => {
       count.value += 2;
     };
-    provide('count',count);
+    provide("count", count);
+    provide("dialogFormVisible", dialogFormVisible);
     return {
       count,
       load,
+      dialogFormVisible,
     };
-    
   },
-})
+});
 </script>
 
 
 <style scoped>
-.common-layout .el-header,
-.common-layout .el-footer {
+.el-header {
   background-color: #b3c0d1;
   color: var(--el-text-color-primary);
-  position: relative;
+  position: sticky;
 }
-
-.common-layout .el-header .el-button{
-  position: absolute;
-  right: 10px;
-  bottom: 5px;
-}
-
 
 .common-layout .el-main {
   background-color: #e9eef3;
@@ -70,9 +65,6 @@ export default defineComponent({
   margin-bottom: 40px;
 }
 
-.common-layout .el-footer {
-  line-height: 60px;
-}
 
 
 

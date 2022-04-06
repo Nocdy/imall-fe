@@ -1,8 +1,12 @@
 <template>
-      <div class="el-dialog-div">
+  <div class="el-dialog-div">
     <el-form :label-position="top" label-width="100px" class="el-form">
       <el-form-item size="large">
-        <el-input class="input-box" v-model="loginAccount" placeholder="用户名/手机号/邮箱"></el-input>
+        <el-input
+          class="input-box"
+          v-model="loginAccount"
+          placeholder="用户名/手机号/邮箱"
+        ></el-input>
       </el-form-item>
       <el-form-item size="large">
         <el-input
@@ -25,23 +29,21 @@
       </el-form-item>
     </el-form>
   </div>
-  
 </template>
 
 <script lang="ts">
-import { defineComponent,inject, ref, toRefs } from 'vue'
+import { defineComponent, inject, ref, toRefs } from "vue";
 
 export default defineComponent({
-    setup() {
-      let options=ref<string[]>(["用户","商家"])
-      let LoginRequest=inject<any>('LoginRequest');
-      return{
-        options,
-        ...toRefs(LoginRequest)
-      }
-        
-    },
-})
+  setup() {
+    let options = ref<string[]>(["用户", "商家"]);
+    let LoginRequest = inject<any>("LoginRequest");
+    return {
+      options,
+      ...toRefs(LoginRequest),
+    };
+  },
+});
 </script>
 
 <style scoped>
@@ -56,9 +58,8 @@ export default defineComponent({
   margin: auto;
 }
 
-.el-dialog-div{
-    height: 23vh;
-     overflow: auto;
-    }
-
+.el-dialog-div {
+  height: 23vh;
+  overflow: auto;
+}
 </style>

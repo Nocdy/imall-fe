@@ -13,7 +13,7 @@
               type="primary"
               plain
               class="el-button"
-              @click="dialogFormVisible = true"
+              @click="openDialog"
             >
               <el-icon style="vertical-align: middle">
                 <avatar />
@@ -32,9 +32,13 @@ import { defineComponent, inject } from "vue";
 
 export default defineComponent({
   setup() {
-    let dialogFormVisible = inject("dialogFormVisible");
+    let dialogFormVisible = inject<any>("dialogFormVisible");
+    const openDialog = () => {
+      dialogFormVisible.value=true;
+    };
     return {
       dialogFormVisible,
+      openDialog,
     };
   },
 });

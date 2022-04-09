@@ -1,5 +1,5 @@
 <template>
-  <el-affix :offset="0">
+  <el-affix :offset="0" z-index="999">
     <div class="bg-red">
       <el-row :gutter="20">
         <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
@@ -13,15 +13,14 @@
               type="primary"
               plain
               class="el-button"
-              @click="openDialog"
+              @click="openWindow"
             >
               <el-icon style="vertical-align: middle">
                 <avatar />
               </el-icon>
-              <span style="vertical-align: middle"> 未登录 </span>
-            </el-button>
-          </div></el-col
-        >
+              <span style="vertical-align: middle">{{loginStatus}} </span>
+            </el-button></div
+        ></el-col>
       </el-row>
     </div>
   </el-affix>
@@ -33,12 +32,20 @@ import { defineComponent, inject } from "vue";
 export default defineComponent({
   setup() {
     let dialogFormVisible = inject<any>("dialogFormVisible");
-    const openDialog = () => {
-      dialogFormVisible.value=true;
+    let drawer=inject<any>("drawer");
+    let loginStatus = inject<any>("loginStatus");
+    const openWindow = () => {
+      if(localStorage.getItem("ClientInfo")==null){
+        dialogFormVisible.value = true;
+      }
+      else{
+        drawer.value=true;
+      }
     };
     return {
       dialogFormVisible,
-      openDialog,
+      openWindow,
+      loginStatus,
     };
   },
 });
@@ -81,5 +88,6 @@ export default defineComponent({
 
 .bg-red {
   background: red;
+  z-index:999
 }
 </style>

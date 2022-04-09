@@ -30,11 +30,11 @@
               <el-button
                 type="text"
                 class="button"
-                @click="countTimeFun(TimeNum, list[index])"
+                @click="goInfo(list[index])"
                 >立即抢购</el-button
               >
             </div>
-            <el-button v-else type="text" class="button">加入购物车</el-button>
+            <el-button v-else type="text" class="button" @click="goInfo(list[index])">加入购物车</el-button>
           </div>
         </div>
       </el-card>
@@ -44,15 +44,30 @@
 
 
 <script lang="ts">
-import { defineComponent, inject } from "vue";
+import { useRouter } from "vue-router";
+import { defineComponent, inject,ref } from "vue";
+import storage from "@/modules/utils/LocalStorageUtils";
 
 export default defineComponent({
   setup() {
+    const router=useRouter();
     let count = inject<number>("count");
     let list = inject<object[]>("list");
+    let clientId=ref<number>();
+    const goInfo=(goods:any)=>{
+      clientId.value=storage.get("ClientInfo").id
+      router.push({
+        name:"goods",
+        params:{
+          cid:clientId.value,
+          gid:goods.id
+        }
+      })
+    }
     return {
       count,
       list,
+      goInfo
     };
   },
 });

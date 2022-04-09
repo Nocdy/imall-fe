@@ -16,16 +16,33 @@ export function getCLientInfo() {
   });
 }
 
-export function getNewList(listNum:number){
+export function getNewList(listNum: number) {
   return Request.axiosInstance({
-    url:"/getList/"+listNum,
-    method:"get"
-  })
+    url: "/getList/" + listNum,
+    method: "get",
+  });
 }
 
-export function updateGoods(){
+export function updateGoods() {
   return Request.axiosInstance({
-    url:"/updateGoods",
-    method:"post"
-  })
+    url: "/updateGoods",
+    method: "post",
+  });
+}
+
+export function getOneInfo(
+  clientId: number | string,
+  goodsId: number | string
+) {
+  return Request.axiosInstance({
+    url: "/getOne/" + clientId +"/"+ goodsId,
+    method: "get",
+  });
+}
+
+export function getUserId() {
+  return Request.axiosInstance({
+    url: "/user/getUserId",
+    method: "get",
+  });
 }

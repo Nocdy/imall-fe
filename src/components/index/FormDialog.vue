@@ -20,41 +20,75 @@
 import { defineComponent, inject, provide, reactive, toRefs } from "vue";
 import UserLoginForm from "./form/UserLoginForm.vue";
 
-import { getCLientInfo, userLogin } from "../../modules/apis/api";
+import { userLogin, getCLientInfo, getUserId } from "../../modules/apis/api";
 import storage from "../../modules/utils/LocalStorageUtils";
 import LoginRequest from "@/modules/request/AccountRequest";
-
+import { ElNotification } from "element-plus";
 export default defineComponent({
   components: {
     UserLoginForm,
   },
   setup() {
     let dialogFormVisible: any = inject("dialogFormVisible");
+    let loginStatus: any = inject("loginStatus");
     let LoginRequest = reactive<LoginRequest>({
       loginAccount: "",
       password: "",
-      role: "client",
+      role: "",
       rememberMe: false,
     });
     function closeDialog(): void {
       dialogFormVisible.value = false;
     }
     const login = (): void => {
+      if (LoginRequest.role == "客户") {
+        LoginRequest.role = "client";
+      }
+      if (LoginRequest.role == "商家") {
+        LoginRequest.role = "vendor";
+      }
       userLogin(LoginRequest).then((res) => {
-        let obj: any = res.data.data;
-        let token: string = obj.token;
-        storage.set("ACCESS_TOKEN", token);
-        getCLientInfo().then((res) => {
-          console.log(res);
-        });
+        if (res.data.code == 2002) {
+          let obj: any = res.data.data;
+          let token: string = obj.token;
+          storage.set("ACCESS_TOKEN", token);
+          storage.set("UserType", LoginRequest.role);
+          dialogFormVisible.value = false;
+          LoginRequest.loginAccount = "";
+          LoginRequest.password = "";
+          LoginRequest.role = "";
+          LoginRequest.rememberMe = false;
+          ElNotification({
+            title: "登录成功",
+            message: res.data.message,
+            type: "success",
+          });
+          getCLientInfo().then((res) => {
+            loginStatus.value = res.data.data.Client.userName;
+            storage.set("ClientInfo", res.data.data.Client);
+          });
+          getUserId().then((res) => {
+            let client = storage.get("ClientInfo");
+            client.id = res.data.data.clientId;
+            storage.set("ClientInfo", client);
+          });
+        } else if (res.data.code == 1004) {
+          ElNotification({
+            title: "登录失败",
+            message: res.data.message,
+            type: "error",
+          });
+        }
       });
     };
+
     provide("LoginRequest", LoginRequest);
     return {
       dialogFormVisible,
       ...toRefs(LoginRequest),
       login,
       closeDialog,
+      loginStatus,
     };
   },
 });

@@ -16,13 +16,18 @@
           show-password
           v-model="password"
         ></el-input>
+        <div>
+        <el-checkbox v-model="rememberMe" class="checkbox">
+          <span>记住我</span>
+        </el-checkbox>
+        </div>
       </el-form-item>
       <el-form-item size="large">
         <el-select v-model="role" class="select-box" placeholder="登录类型">
           <el-option
             v-for="item in options"
-            :key="item.value"
-            :value="item.value"
+            :key="item"
+            :value="item"
           >
           </el-option>
         </el-select>
@@ -36,7 +41,7 @@ import { defineComponent, inject, ref, toRefs } from "vue";
 
 export default defineComponent({
   setup() {
-    let options = ref<string[]>(["用户", "商家"]);
+    let options = ref<string[]>(["客户", "商家"]);
     let LoginRequest = inject<any>("LoginRequest");
     return {
       options,
@@ -54,12 +59,16 @@ export default defineComponent({
   width: 150px;
 }
 .el-form {
-  max-width: 460px;
+  max-width: 600px;
   margin: auto;
 }
 
 .el-dialog-div {
-  height: 23vh;
+  height: 30vh;
   overflow: auto;
+}
+
+.checkbox{
+  margin-right: 70px;
 }
 </style>

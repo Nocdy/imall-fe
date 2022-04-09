@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios"; //导入axios 和钩子
+import storage from "./LocalStorageUtils";
 
 // 初始化loading
 
@@ -28,7 +29,7 @@ export class Request {
 
     this.axiosInstance.interceptors.request.use(
       (config: AxiosRequestConfig) => {
-        const token = localStorage.getItem("ACCESS_TOKEN"); //保存token到localStorage中
+        const token = storage.get("ACCESS_TOKEN"); //保存token到localStorage中
         if (token) {
           (config as any).headers.Authorization = token; //携带请求头
           // ;(config as any).headers.Authorization = sessionStorage.token

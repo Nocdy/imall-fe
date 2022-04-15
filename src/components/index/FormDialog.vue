@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, provide, reactive, toRefs } from "vue";
+import { defineComponent, inject, provide, reactive } from "vue";
 import UserLoginForm from "./form/UserLoginForm.vue";
 
 import { userLogin, getCLientInfo, getUserId } from "../../modules/apis/api";
@@ -85,7 +85,6 @@ export default defineComponent({
     provide("LoginRequest", LoginRequest);
     return {
       dialogFormVisible,
-      ...toRefs(LoginRequest),
       login,
       closeDialog,
       loginStatus,

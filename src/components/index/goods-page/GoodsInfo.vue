@@ -14,9 +14,15 @@
             direction="vertical"
             :style="blockMargin"
           >
-            <el-descriptions-item label="商铺">{{
-              shopName
-            }}</el-descriptions-item>
+            <el-tooltip placement="bottom" effect="light">
+              <template #content>
+                <span>店主:</span>{{vendor.contactName}}<br />
+                <span>商家电话:</span>{{vendor.contactNumber}}<br />
+               </template>
+              <el-descriptions-item label="商铺">{{
+                vendor.shopName
+              }}</el-descriptions-item>
+            </el-tooltip>
             <el-descriptions-item label="抢购时间">
               <div class="viewallItem_top_l_b_time">
                 {{ goodsInfo.countTime.day }}天
@@ -40,10 +46,32 @@
               >{{ goodsInfo.description }}
             </el-descriptions-item>
           </el-descriptions>
-          <el-button type="primary" round style="float: right">
-            <el-icon><shopping-cart /></el-icon>
-            加入购物车
-          </el-button>
+          <el-button-group style="float: right">
+            <el-button
+              v-if="goodsInfo.isPlash"
+              type="primary"
+              :disabled="btnSwitch"
+              @click="getFlash"
+              round
+            >
+              <el-icon><shopping-cart /></el-icon>
+              立即抢购
+            </el-button>
+            <el-button
+              v-else
+              type="primary"
+              @click="addList"
+              round
+              :disabled="btnSwitch"
+            >
+              <el-icon><shopping-cart /></el-icon>
+              加入购物车
+            </el-button>
+            <el-button type="danger" @click="returnHome" round>
+              返回主页
+              <el-icon><home-filled /></el-icon>
+            </el-button>
+          </el-button-group>
         </div>
       </el-main>
     </el-container>
@@ -51,25 +79,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from "vue";
-import { getOneInfo } from "../../../modules/apis/api";
+import { defineComponent, onMounted, reactive, ref, watch } from "vue";
+import {
+  addListToShoppingCart,
+  flash,
+  getOneInfo,
+  getVendorInfo,
+} from "../../../modules/apis/api";
 import countTimeFun from "../../../modules/utils/CountDownTimeUtils";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Goods from "@/modules/entities/Goods";
+import { ElMessageBox, ElMessage } from "element-plus";
 
 export default defineComponent({
   setup() {
     const route = useRoute();
-    const clientId = ref<number>();
-    const goodsId = ref<number>();
-    const shopName = ref<string | null>("testShop");
+    const router = useRouter();
+    let btnSwitch = ref<boolean>(false);
+    const clientId = ref<number>(0);
+    const goodsId = ref<number>(0);
+    let shopName = ref<string | null>("");
+    let vendor = ref<any>();
     let goodsInfo = reactive<Goods>({
       id: 0,
-      name: "string",
+      name: "",
       count: 0,
-      sellDate: new Date("2022-04-10 00:00:00"),
+      sellDate: "",
       imagePath: "",
-      description: "test",
+      description: "",
       isPlash: false,
       plashCount: null,
       vendorId: 0,
@@ -91,6 +128,53 @@ export default defineComponent({
       }
       return val;
     };
+    const returnHome = () => {
+      router.go(-1);
+    };
+
+    const getFlash = () => {
+      flash(clientId.value, goodsId.value).then((res) => {
+        if (res.data.code == 2000) {
+          ElMessageBox.alert(res.data.data.message, "消息", {
+            confirmButtonText: "确认",
+            callback: () => {
+              ElMessage({
+                type: "warning",
+                message: "请注意,订单有效期为15分钟!",
+              });
+            },
+          });
+        }
+      });
+    };
+
+    watch(
+      () => goodsInfo.countTime,
+      (newValue) => {
+        if (
+          newValue.day != 0 ||
+          newValue.hour != "00" ||
+          newValue.min != "00" ||
+          newValue.second != "00"
+        ) {
+          btnSwitch.value = true;
+        } else {
+          btnSwitch.value = false;
+        }
+      },
+      { immediate: true, deep: true }
+    );
+
+    const addList = () => {
+      addListToShoppingCart(clientId.value, goodsId.value).then((res) => {
+        if (res.data.code == 2000) {
+          ElMessageBox.alert("加入购物车成功！", "消息", {
+            confirmButtonText: "确认",
+          });
+        }
+      });
+    };
+
     onMounted(() => {
       console.log(route.params);
       clientId.value = Number(route.params.cid);
@@ -98,15 +182,19 @@ export default defineComponent({
 
       getOneInfo(clientId.value, goodsId.value).then((res) => {
         let result = res.data.data.goods;
-        goodsInfo.id=result.id
-        goodsInfo.name=result.name
-        goodsInfo.count=result.count
-        goodsInfo.sellDate=new Date(result.sellDate)
-        goodsInfo.imagePath=result.imagePath
-        goodsInfo.description=result.description
-        goodsInfo.isPlash=result.isPlash
-        goodsInfo.plashCount=result.plashCount
-        goodsInfo.vendorId=result.vendorId
+        goodsInfo.id = result.id;
+        goodsInfo.name = result.name;
+        goodsInfo.count = result.count;
+        goodsInfo.sellDate = new Date(result.sellDate);
+        goodsInfo.imagePath = result.imagePath;
+        goodsInfo.description = result.description;
+        goodsInfo.isPlash = result.isPlash;
+        goodsInfo.plashCount = result.plashCount;
+        goodsInfo.vendorId = result.vendorId;
+      });
+
+      getVendorInfo(goodsInfo.vendorId).then((res) => {
+        vendor = res.data.data.vendor;
       });
       countTimeFun(TimeNum, goodsInfo);
     });
@@ -114,6 +202,11 @@ export default defineComponent({
       clientId,
       goodsInfo,
       shopName,
+      returnHome,
+      addList,
+      btnSwitch,
+      getFlash,
+      vendor,
     };
   },
 });

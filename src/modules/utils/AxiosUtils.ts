@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios"; //导入axios 和钩子
 import storage from "./LocalStorageUtils";
+import { ElMessageBox,ElMessage } from "element-plus";
 
 // 初始化loading
 
@@ -45,7 +46,7 @@ export class Request {
     this.axiosInstance.interceptors.response.use(
       // 请求成功
       (response: AxiosResponse) => {
-        if (response.status === 200) {
+        if (response.data.code >= 2000 && response.data.code < 3000) {
           // return Promise.resolve(response.data);
           return response;
         } else {
@@ -67,7 +68,9 @@ export class Request {
           // network状态在app.vue中控制着一个全局的断网提示组件的显示隐藏
           // 关于断网组件中的刷新重新获取数据，会在断网组件中说明
           // message.warn('网络连接异常,请稍后再试!')
-          console.log("网络连接异常,请稍后再试!");
+          ElMessageBox.alert("网络连接异常,请稍后再试!", "消息", {
+            confirmButtonText: "确认",
+          });
         }
       }
     );
@@ -79,18 +82,17 @@ export class Request {
    */
   private static errorHandle(res: any) {
     // 状态码判断
-    switch (res.status) {
+    switch (res.data.code) {
       case 401:
-        break;
       case 403:
-        break;
-      case 404:
-        // message.warn('请求的资源不存在'),
-        console.log("请求的资源不存在");
+        ElMessageBox.alert(res.data.message, "认证消息", {
+          confirmButtonText: "确认",
+        });
         break;
       default:
-        // message.warn('连接错误')
-        console.log("连接错误");
+        ElMessageBox.alert(res.data.message, res.data.code, {
+          confirmButtonText: "确认",
+        });
     }
   }
 }

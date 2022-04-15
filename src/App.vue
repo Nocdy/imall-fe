@@ -6,19 +6,25 @@
       </el-header>
       <el-main v-infinite-scroll="load">
         <router-view name="dialog" />
+        <router-view name="registry" />
         <router-view>
           <router-view name="carousel" />
           <router-view name="scroll" />
           <router-view />
         </router-view>
-        <el-drawer v-model="drawer" title="I am the title" :with-header="false">
-          <span>我的购物车</span>
-          <span>我的订单</span>
+        <el-drawer v-model="drawer" title="我的商城">
+          <div>
+            <el-link type="primary" @click="toShoppingList">我的购物车</el-link>
+          </div>
+          <div>
+            <el-link type="primary" @click="toOrderList">我的订单</el-link>
+          </div>
           <el-button @click="logout" class="logout-btn" type="danger" danger>
             <el-icon><switch-button /></el-icon>
             <span>注销账号</span>
           </el-button>
         </el-drawer>
+        <el-backtop :right="100" :bottom="100" />
       </el-main>
     </el-container>
   </div>
@@ -28,16 +34,19 @@
 <script lang="ts">
 import { defineComponent, onMounted, provide, reactive, ref } from "vue";
 import countTimeFun from "./modules/utils/CountDownTimeUtils";
-import { getNewList } from "./modules/apis/api";
+import { getNewList, userLogout } from "./modules/apis/api";
 import Goods from "./modules/entities/Goods";
 import storage from "./modules/utils/LocalStorageUtils";
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
     const drawer = ref<boolean>(false);
     const loginStatus = ref<string>("未登录");
     const dialogFormVisible = ref<boolean>(false);
+    const registryFormVisble = ref<boolean>(false);
     const count = ref<number>(1);
     let imageUrl = ref<string>();
     let list = ref<object[]>([]);
@@ -56,7 +65,9 @@ export default defineComponent({
         }
       });
     };
-
+    const click = () => {
+      console.log("hello");
+    };
     const TimeNum = (val: any, dataTime: any) => {
       if (val != undefined) {
         dataTime.day = val.day;
@@ -69,26 +80,43 @@ export default defineComponent({
       return val;
     };
 
-    const logout=()=>{
-      ElMessageBox.confirm(
-        "确认注销账号？",
-        "Warning",
-        {
-          confirmButtonText:"确认",
-          cancelButtonText:"取消",
-          type:"warning",
-        }
-      )
-      .then(()=>{
+    const logout = () => {
+      ElMessageBox.confirm("确认注销账号？", "Warning", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
         localStorage.clear();
-        drawer.value=false;
-        loginStatus.value="未登录";
-        ElMessage({
-          type:"success",
-          message:"注销成功",
-        })
-      })
-    }
+        drawer.value = false;
+        loginStatus.value = "未登录";
+        userLogout().then(() => {
+          ElMessage({
+            type: "success",
+            message: "注销成功",
+          });
+        });
+      });
+    };
+
+    const toOrderList = () => {
+      let clientId = storage.get("ClientInfo").id;
+      router.push({
+        name: "showOrder",
+        params: {
+          cid: clientId,
+        },
+      });
+    };
+
+    const toShoppingList = () => {
+      let clientId = storage.get("ClientInfo").id;
+      router.push({
+        name: "shoppingList",
+        params: {
+          cid: clientId,
+        },
+      });
+    };
 
     const handleAvatarSuccess = (res: any, file: any) => {
       imageUrl.value = URL.createObjectURL(file.raw);
@@ -113,13 +141,17 @@ export default defineComponent({
     provide("dialogFormVisible", dialogFormVisible);
     provide("loginStatus", loginStatus);
     provide("drawer", drawer);
+    provide("registryFormVisble", registryFormVisble);
     return {
       load,
       imageUrl,
       dialogFormVisible,
       handleAvatarSuccess,
       drawer,
-      logout
+      logout,
+      click,
+      toShoppingList,
+      toOrderList,
     };
   },
 });
@@ -128,13 +160,13 @@ export default defineComponent({
 
 <style scoped>
 .el-header {
-  background-color: #b3c0d1;
+  background-color: #d3dce6;
   color: var(--el-text-color-primary);
   position: sticky;
 }
 
 .common-layout .el-main {
-  background-color: #e9eef3;
+  background-color: #d3dce6;
   color: var(--el-text-color-primary);
   overflow: hidden;
 }

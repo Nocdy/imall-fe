@@ -5,7 +5,7 @@
         <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
         <el-col :span="6" :offset="3"
           ><div class="grid-content bg-purple">
-            <el-input placeholder="Type something" prefix-icon="Search" /></div
+            <el-input placeholder="搜索商品" prefix-icon="Search" v-model="searchKey" @keyup.enter="toSearch" /></div
         ></el-col>
         <el-col :span="6" :offset="3"
           ><div class="grid-content bg-purple">
@@ -27,13 +27,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from "vue";
+import { useRouter } from "vue-router";
+import { defineComponent, inject,ref } from "vue";
 
 export default defineComponent({
   setup() {
+    const router =useRouter();
     let dialogFormVisible = inject<any>("dialogFormVisible");
     let drawer=inject<any>("drawer");
     let loginStatus = inject<any>("loginStatus");
+    let searchKey=ref<string>("");
     const openWindow = () => {
       if(localStorage.getItem("ClientInfo")==null){
         dialogFormVisible.value = true;
@@ -42,10 +45,21 @@ export default defineComponent({
         drawer.value=true;
       }
     };
+
+    const toSearch=()=>{
+        router.push({
+          name:"search",
+          params:{
+            keyword:searchKey.value
+          }
+        })
+    }
     return {
       dialogFormVisible,
       openWindow,
       loginStatus,
+      searchKey,
+      toSearch
     };
   },
 });
@@ -87,7 +101,6 @@ export default defineComponent({
 }
 
 .bg-red {
-  background: red;
   z-index:999
 }
 </style>

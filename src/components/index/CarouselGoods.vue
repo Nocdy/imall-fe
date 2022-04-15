@@ -1,16 +1,47 @@
 <template>
   <el-carousel :interval="4000" type="card" height="500px">
-    <el-carousel-item v-for="item in 6" :key="item">
-      <h3>{{ item }}</h3>
+    <el-carousel-item v-for="(item, index) in imageList" :key="index">
+      <a @click="goInfo(item)">
+        <el-image :src="item.imagePath" class="image" />
+      </a>
     </el-carousel-item>
   </el-carousel>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref  } from "vue";
+import storage from "@/modules/utils/LocalStorageUtils";
+import { useRouter } from "vue-router";
+import { getCarousel } from "@/modules/apis/api";
 
 export default defineComponent({
-  setup() {},
+  setup() {
+    let imageList = ref<object[]>([]);
+    const router = useRouter();
+    const goInfo = (goods: any) => {
+      const clientId = storage.get("ClientInfo").id;
+      router.push({
+        name: "goods",
+        params: {
+          cid: clientId,
+          gid: goods.id,
+        },
+      });
+    };
+    onMounted(()=>{
+      getCarousel().then((res)=>{
+        for(let data of res.data.data.showList){
+          imageList.value.push(data);
+        }
+      })
+    })
+
+
+    return {
+      imageList,
+      goInfo,
+    };
+  },
 });
 </script>
 
@@ -31,5 +62,11 @@ export default defineComponent({
 
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
 }
 </style>

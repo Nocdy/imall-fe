@@ -49,6 +49,8 @@ function countTime(timeSrt:any) {
   return { day, hour, min, second };
 }
 
+
+
 export default function countTimeFun(ck:any,t:any) {
   setInterval(
     (t) => {

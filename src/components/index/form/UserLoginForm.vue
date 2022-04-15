@@ -32,6 +32,9 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item size="large">
+        <el-link @click="toRegistry"><span>没有账号？</span></el-link>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -43,9 +46,16 @@ export default defineComponent({
   setup() {
     let options = ref<string[]>(["客户", "商家"]);
     let LoginRequest = inject<any>("LoginRequest");
+    let registryFormVisble=inject<any>("registryFormVisble");
+    let dialogFormVisible=inject<any>("dialogFormVisible");
+    const toRegistry=()=>{
+      dialogFormVisible.value=false;
+      registryFormVisble.value=true;
+    }
     return {
       options,
       ...toRefs(LoginRequest),
+      toRegistry
     };
   },
 });

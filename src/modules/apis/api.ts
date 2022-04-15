@@ -3,7 +3,7 @@ import { Request } from "../utils/AxiosUtils"; //导入请求拦截器request
 export function userLogin(parameter: any) {
   //导出方法
   return Request.axiosInstance({
-    url: "/user/login",
+    url: "/login",
     method: "post",
     data: parameter,
   });
@@ -11,7 +11,7 @@ export function userLogin(parameter: any) {
 
 export function getCLientInfo() {
   return Request.axiosInstance({
-    url: "/user/getClientInfo",
+    url: "/getClientInfo",
     method: "get",
   });
 }
@@ -35,14 +35,97 @@ export function getOneInfo(
   goodsId: number | string
 ) {
   return Request.axiosInstance({
-    url: "/getOne/" + clientId +"/"+ goodsId,
+    url: "/getOne/" + clientId + "/" + goodsId,
     method: "get",
   });
 }
 
 export function getUserId() {
   return Request.axiosInstance({
-    url: "/user/getUserId",
+    url: "/getUserId",
     method: "get",
   });
+}
+
+export function addListToShoppingCart(
+  clientId: number | string,
+  goodsId: number | string
+) {
+  return Request.axiosInstance({
+    url: "/addList/" + clientId + "/" + goodsId,
+    method: "get",
+  });
+}
+
+export function showList(clientId: number | string) {
+  return Request.axiosInstance({
+    url: "/showList/" + clientId,
+    method: "get",
+  });
+}
+
+export function flash(clientId: number | string, goodsId: number | string) {
+  return Request.axiosInstance({
+    url: "/Flash/" + clientId + "/" + goodsId,
+    method: "get",
+  });
+}
+
+export function getOrder(parameter: any) {
+  return Request.axiosInstance({
+    url: "/showOrder",
+    method: "post",
+    data: parameter,
+  });
+}
+
+export function confirmOrder(parameter: any) {
+  return Request.axiosInstance({
+    url: "/confirmOrder",
+    method: "post",
+    data: parameter,
+  });
+}
+
+export function commonpurchase(clientId: number | string) {
+  return Request.axiosInstance({
+    url: "/purchase/" + clientId,
+    method: "get",
+  });
+}
+
+export function userLogout() {
+  return Request.axiosInstance({
+    url: "/logout",
+    method: "get",
+  });
+}
+
+export function userRegistry(parameter: any) {
+  return Request.axiosInstance({
+    url: "/registry",
+    method: "post",
+    data: parameter,
+  });
+}
+
+export function getVendorInfo(vendorId:number|string){
+  return Request.axiosInstance({
+    url:"/getVendorInfo/"+vendorId,
+    method:"get",
+  })
+}
+
+export function search(keyword:string){
+  return Request.axiosInstance({
+    url:"/search/"+keyword,
+    method:"get"
+  })
+}
+
+export function getCarousel(){
+  return Request.axiosInstance({
+    url:"/carouselGet",
+    method:"get"
+  })
 }
